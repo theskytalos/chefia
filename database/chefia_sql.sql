@@ -5,18 +5,18 @@ CREATE DATABASE chefia_db;
 USE chefia_db;
                          
 CREATE TABLE menu_categories (menu_categories_id	INT PRIMARY KEY AUTO_INCREMENT,
-							  menu_categories_text	VARCHAR(128));
+			      menu_categories_text	VARCHAR(128));
                          
 CREATE TABLE menu_items (menu_items_id			INT PRIMARY KEY AUTO_INCREMENT,
-						 menu_items_name		VARCHAR(128),
-                         menu_items_description VARCHAR(1024),
+			 menu_items_name		VARCHAR(128),
+                         menu_items_description 	VARCHAR(1024),
                          menu_items_price		DECIMAL,
                          menu_items_stock		INT,
-                         menu_categories_id_fk	INT,
+                         menu_categories_id_fk		INT,
                          FOREIGN KEY (menu_categories_id_fk) REFERENCES menu_categories (menu_categories_id));
                          
 CREATE TABLE menu_images (menu_images_id	INT PRIMARY KEY AUTO_INCREMENT,
-						  menu_images_path	VARCHAR(1024),
+			  menu_images_path	VARCHAR(1024),
                           menu_items_id_fk	INT,
                           FOREIGN KEY (menu_items_id_fk) REFERENCES menu_items (menu_items_id));
                           

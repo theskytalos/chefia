@@ -4,72 +4,79 @@
 
     class StateController {
         public function createState($stateModel) {
-            if (is_null($stateModel->getStateText()) || is_empty($stateModel->getStateText())) {
-                
-            }
+            if (is_null($stateModel->getStateText()) || is_empty($stateModel->getStateText()))
+            	return ["status" => false, "message" => "O campo Texto do Estado é obrigatório."];
+
+	    if (is_numeric($stateModel->getStateText()))
+		return ["status" => false, "message" => "O campo Texto do Estado não pode ser numérico."];    
 
             $stateDAO = new StateDAO();
-            return $stateDAO->createState($stateModel);
+            if ($stateDAO->createState($stateModel))
+		return ["status" => true, "message" => "Estado criado com sucesso."];
+	    else
+		return ["status" => false, "message" => "Não foi possível criar o Estado."];
         }
 
         public function editState($stateModel) {
-            if (is_null($stateModel->getStateId()) || is_empty($stateModel->getStateId())) {
+            if (is_null($stateModel->getStateId()) || is_empty($stateModel->getStateId()))
+		return ["status" => false, "message" => "O Id do Estado é obrigatório."];
 
-            }
+            if (!is_numeric($stateModel->getStateId()))
+		return ["status" => false, "message" => "O Id do Estado deve ser numérico."];
 
-            if (!is_numeric($stateModel->getStateId())) {
+            if (is_null($stateModel->getStateText()) || is_empty($stateModel->getStateText()))
+          	return ["status" => false, "message" => "O campo Texto do Estado é obrigatório."];
 
-            }
-
-            if (is_null($stateModel->getStateText()) || is_empty($stateModel->getStateText())) {
-                
-            }
-
-            if (!$stateDAO->checkExistentState($stateModel)) {
-                // Estado referenciado não existe
-            }
+            if (!$stateDAO->checkExistentState($stateModel))
+ 		return ["status" => false, "message" => "O Estado não existe."];
 
             $stateDAO = new StateDAO();
-            return $stateDAO->editState($stateModel);
+            if ($stateDAO->editState($stateModel))
+		return ["status" => true, "message" => "Estado editado com sucesso."];
+	    else
+		return ["status" => false, "message" => "Não foi possível editar o Estado."];
         }
 
         public function removeState($stateModel) {
-            if (is_null($stateModel->getStateId()) || is_empty($stateModel->getStateId())) {
+            if (is_null($stateModel->getStateId()) || is_empty($stateModel->getStateId()))
+		return ["status" => false, "message" => "O Id do Estado é obrigatório."];
 
-            }
+            if (!is_numeric($stateModel->getStateId()))
+		return ["status" => false, "message" => "O Id do Estado deve ser numérico."];
 
-            if (!is_numeric($stateModel->getStateId())) {
-
-            }
-
-            if (!$stateDAO->checkExistentState($stateModel)) {
-                // Estado referenciado não existe
-            }
+            if (!$stateDAO->checkExistentState($stateModel))
+ 		return ["status" => false, "message" => "O Estado não existe."];
 
             $stateDAO = new StateDAO();
-            return $stateDAO->removeState($stateModel);
+            if ($stateDAO->removeState($stateModel))
+		return ["status" => true, "message" => "Estado removido com sucesso."];
+	    else
+		return ["status" => false, "message" => "Não foi possível remover o Estado"];
         }
 
         public function getState($stateModel) {
-            if (is_null($stateModel->getStateId()) || is_empty($stateModel->getStateId())) {
+            if (is_null($stateModel->getStateId()) || is_empty($stateModel->getStateId()))
+		return ["status" => false, "message" => "O Id do Estado é obrigatório."];
 
-            }
+            if (!is_numeric($stateModel->getStateId()))
+		return ["status" => false, "message" => "O Id do Estado deve ser numérico."];
 
-            if (!is_numeric($stateModel->getStateId())) {
-
-            }
-
-            if (!$stateDAO->checkExistentState($stateModel)) {
-                // Estado referenciado não existe
-            }
+            if (!$stateDAO->checkExistentState($stateModel))
+ 		return ["status" => false, "message" => "O Estado não existe."];
             
             $stateDAO = new StateDAO();
-            return $stateDAO->getState($stateModel);
+            if (!is_null($stateModel = $stateDAO->getState($stateModel)))
+		return ["status" => true, "message" => $stateModel];
+	    else
+		return ["status" => false, "message" => "O Estado não existe."];
         }
 
         public function getAllStates() {
             $stateDAO = new StateDAO();
-            return $stateDAO->getAllStates();
+            if (!empty($statesArray = $stateDAO->getAllStates()))
+		return ["status" => true, "message" => $statesArray];
+	    else
+		return ["status" => false, "message" => "Não há Estados."];	
         }
     }
 ?>
