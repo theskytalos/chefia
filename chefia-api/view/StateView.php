@@ -11,12 +11,7 @@
 
                 $stateModel->setStateText($requestBody["text"]);
 
-                if ($stateController->createState($stateModel)) {
-
-                } else {
-
-                }
-
+		response($stateController->createState($stateModel));
                 break;
             case "edit":
                 $stateModel = new StateModel();
@@ -25,12 +20,7 @@
                 $stateModel->setStateId($requestBody["id"]);
                 $stateModel->setStateText($requestBody["text"]);
 
-                if ($stateController->editState($stateModel)) {
-
-                } else {
-
-                }
-
+		response($stateController->editState($stateModel));
                 break;
             case "remove":
                 $stateModel = new StateModel();
@@ -38,12 +28,7 @@
 
                 $stateModel->setStateId($requestBody["id"]);
 
-                if ($stateController->removeState($stateModel)) {
-
-                } else {
-
-                }
-
+               	response($stateController->removeState($stateModel));
                 break;
             case "get":
                 $stateModel = new StateModel();
@@ -51,26 +36,16 @@
 
                 $stateModel->setStateId($requestBody["id"]);
 
-                if ($stateController->getState($stateModel)) {
-                
-                } else {
-
-                }
-
+                response($stateController->getState($stateModel));
                 break;
             case "getAll":
-                if ($stateController->getAllStates()) {
-
-                } else {
-                    
-                }
-
+                response($stateController->getAllStates());
                 break;
             default:
-                response(BAD_REQUEST, ["content" => "URL inválida."])
+                response(["success" => false, "content" => "Comando de API desconhecido."]);
         }
     } else
-        response(BAD_REQUEST, ["content" => "URL inválida."]);
+        response(["success" => false, "content" => "URL inválida."]);
 
     exit();
 ?>

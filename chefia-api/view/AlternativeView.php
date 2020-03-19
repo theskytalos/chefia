@@ -9,43 +9,26 @@
                 $alternativeModel = new AlternativeModel();
                 $alternativeController = new AlternativeController();
 
-                if ($alternativeController->createAlternative($alternativeModel)) {
-
-                } else {
-
-                }
-
+                response($alternativeController->createAlternative($alternativeModel));
                 break;
             case "edit":
                 $alternativeModel = new AlternativeModel();
                 $alternativeController = new AlternativeController();
 
-                if ($alternativeController->editAlternative($alternativeModel)) {
-
-                } else {
-
-                }
+                response($alternativeController->editAlternative($alternativeModel));
                 break;
             case "remove":
                 $alternativeModel = new AlternativeModel();
                 $alternativeController = new AlternativeController();
 
-                if ($alternativeController->removeAlternative($alternativeModel)) {
-
-                } else {
-
-                }
+                response($alternativeController->removeAlternative($alternativeModel));
                 break;
             case "getAllByState":
-                if ($alternativeController->createAlternative($alternativeModel)) {
-
-                } else {
-
-                }
+                response($alternativeController->createAlternative($alternativeModel));
                 break;
             default:
-                response(BAD_REQUEST, ["content" => "URL inválida"]);
+                response(["success" => false, "content" => "Comando de API desconhecido."]);
         }
     } else
-        response(BAD_REQUEST, ["content" => "URL inválida"]);
+        response(["success" => false, "content" => "URL inválida."]);
 ?>

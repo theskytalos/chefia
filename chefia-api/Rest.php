@@ -29,11 +29,16 @@
         break;
     }
 
-    function response($responseCode, $responseData) {
-        if (is_numeric($responseCode) && is_array($responseData)) {
-            http_response_code($responseCode);
-            echo json_encode(array("content" => "URL Inválida."));
-        }
+    // Every server response is 200 OK, whether it's an error or not.
+    function response($responseData) {
+        if (is_array($responseData))
+            echo json_encode(["success" => $responseData["status"], "content" => $responseData["message"]]);
+	else
+	    echo json_encode(["success" => false, "content" => "URL Inválida."]);
         exit();
+    }
+
+    function checkNotNull($requestBody, $checkFor) {
+    
     }
 ?>
