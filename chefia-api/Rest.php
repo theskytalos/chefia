@@ -38,7 +38,12 @@
         exit();
     }
 
-    function checkNotNull($requestBody, $checkFor) {
-    
+    // Returns true if all indexes passed in 'checkForArray' are set and not null.
+    function checkNotNull($requestBody, $checkForArray) {
+	foreach ($checkForArray as $checkFor) 
+	    if (!isset($requestBody[$checkFor]) || is_null($requestBody[$checkFor]))
+		return false;
+
+	return true;
     }
 ?>
