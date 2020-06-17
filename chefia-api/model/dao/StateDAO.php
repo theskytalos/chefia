@@ -50,6 +50,26 @@
             return NULL;
         }
 
+        public function getFirstState() {
+            global $pdo;
+
+            $stateQuery = $pdo->query("SELECT states_id, states_text FROM states ORDER BY states_id ASC LIMIT 1;");
+
+            if ($stateQuery) {
+                if ($stateQuery->rowCount() == 1) {
+                    $row = $stateQuery->fetch();
+
+                    $stateModel = new StateModel();
+                    $stateModel->setStateId($row["states_id"]);
+                    $stateModel->setStateText($row["states_text"]);
+
+                    return $stateModel;
+                }
+            }
+
+            return NULL;
+        }
+
         public function getAllStates() {
             global $pdo;
 
@@ -77,7 +97,7 @@
         public function checkExistentState($stateModel) {
             global $pdo;
 
-            $stateQuery = $pdo->query("SELECT states_id FROM states WHERE stated_id = ?;");
+            $stateQuery = $pdo->prepare("SELECT states_id FROM states WHERE states_id = ?;");
             $stateQuery->bindValue(1, $stateModel->getStateId(), PDO::PARAM_INT);
 
             if ($stateQuery->execute())
@@ -85,6 +105,14 @@
                     return true;
 
             return false;
+        }
+
+        public function countAllStates() {
+            global $pdo;
+            
+            $stateQuery = $pdo->query("SELECT states_id FROM states;");
+
+            return $stateQuery->rowCount();
         }
     }
 ?>

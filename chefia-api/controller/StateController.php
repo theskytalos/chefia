@@ -4,7 +4,7 @@
 
     class StateController {
         public function createState($stateModel) {
-            if (is_null($stateModel->getStateText()) || is_empty($stateModel->getStateText()))
+            if (is_null($stateModel->getStateText()) || empty($stateModel->getStateText()))
             	return ["status" => false, "message" => "O campo Texto do Estado é obrigatório."];
 
 	    if (is_numeric($stateModel->getStateText()))
@@ -18,13 +18,13 @@
         }
 
         public function editState($stateModel) {
-            if (is_null($stateModel->getStateId()) || is_empty($stateModel->getStateId()))
+            if (is_null($stateModel->getStateId()) || empty($stateModel->getStateId()))
 		return ["status" => false, "message" => "O Id do Estado é obrigatório."];
 
             if (!is_numeric($stateModel->getStateId()))
 		return ["status" => false, "message" => "O Id do Estado deve ser numérico."];
 
-            if (is_null($stateModel->getStateText()) || is_empty($stateModel->getStateText()))
+            if (is_null($stateModel->getStateText()) || empty($stateModel->getStateText()))
           	return ["status" => false, "message" => "O campo Texto do Estado é obrigatório."];
 
             if (!$stateDAO->checkExistentState($stateModel))
@@ -38,7 +38,7 @@
         }
 
         public function removeState($stateModel) {
-            if (is_null($stateModel->getStateId()) || is_empty($stateModel->getStateId()))
+            if (is_null($stateModel->getStateId()) || empty($stateModel->getStateId()))
 		return ["status" => false, "message" => "O Id do Estado é obrigatório."];
 
             if (!is_numeric($stateModel->getStateId()))
@@ -55,28 +55,41 @@
         }
 
         public function getState($stateModel) {
-            if (is_null($stateModel->getStateId()) || is_empty($stateModel->getStateId()))
-		return ["status" => false, "message" => "O Id do Estado é obrigatório."];
-
+            if (is_null($stateModel->getStateId()))
+                return ["status" => false, "message" => "O Id do Estado é obrigatório."];
+                
             if (!is_numeric($stateModel->getStateId()))
-		return ["status" => false, "message" => "O Id do Estado deve ser numérico."];
+                return ["status" => false, "message" => "O Id do Estado deve ser numérico."];
 
-            if (!$stateDAO->checkExistentState($stateModel))
- 		return ["status" => false, "message" => "O Estado não existe."];
-            
             $stateDAO = new StateDAO();
-            if (!is_null($stateModel = $stateDAO->getState($stateModel)))
-		return ["status" => true, "message" => $stateModel];
-	    else
-		return ["status" => false, "message" => "O Estado não existe."];
+            if (empty($stateModel->getStateId())) {
+                if (!is_null($stateModel = $stateDAO->getFirstState()))
+                    return ["status" => true, "message" => $stateModel];
+                else
+                    return ["status" => false, "message" => "O Estado não existe."];
+            } else {
+                if (!$stateDAO->checkExistentState($stateModel))
+                    return ["status" => false, "message" => "O Estado não existe."];
+                     
+                if (!is_null($stateModel = $stateDAO->getState($stateModel)))
+                    return ["status" => true, "message" => $stateModel];
+                else
+                    return ["status" => false, "message" => "O Estado não existe."];
+            }
         }
 
         public function getAllStates() {
             $stateDAO = new StateDAO();
             if (!empty($statesArray = $stateDAO->getAllStates()))
-		return ["status" => true, "message" => $statesArray];
-	    else
-		return ["status" => false, "message" => "Não há Estados."];	
+                return ["status" => true, "message" => $statesArray];
+            else
+                return ["status" => false, "message" => "Não há Estados."];	
+        }
+
+        public function countAllStates() {
+            $stateDAO = new StateDAO();
+
+            return $stateDAO->countAllStates();
         }
     }
 ?>

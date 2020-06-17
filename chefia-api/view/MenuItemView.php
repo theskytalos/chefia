@@ -6,64 +6,75 @@
 
     if (isset($requestBody["apiRequest"]) && !empty($requestBody["apiRequest"])) {
         switch($requestBody["apiRequest"]) {
-            case "create":
-		if (!checkNotNull($requestBody, ["menuItemName", "menuItemDescription", "menuItemPrice", "menuItemStock", "menuCategoryId"]))
-		    response(["success" => false, "content" => "URL inválida."]);
+			case "create":
+				if (!checkNotNull($requestBody, ["menuItemName", "menuItemDescription", "menuItemPrice", "menuItemStock", "menuCategoryId"]))
+					response(["success" => false, "content" => "URL inválida."]);
 
-		$menuItemModel = new MenuItemModel();
-		$menuItemController = new MenuItemController();
+				$menuItemModel = new MenuItemModel();
+				$menuItemController = new MenuItemController();
 
-		$menuItemModel->setMenuItemName($requestBody["menuItemName"]);
-		$menuItemModel->setMenuItemDescription($requestBody["menuItemDescription"]);
-		$menuItemModel->setMenuItemPrice($requestBody["menuItemPrice"]);
-		$menuItemModel->setMenuItemStock($requestBody["menuItemStock"]);
-		$menuItemModel->setMenuCategoryModel(new MenuCategoryModel($requestBody["menuCategoryId"]));
+				$menuItemModel->setMenuItemName($requestBody["menuItemName"]);
+				$menuItemModel->setMenuItemDescription($requestBody["menuItemDescription"]);
+				$menuItemModel->setMenuItemPrice($requestBody["menuItemPrice"]);
+				$menuItemModel->setMenuItemStock($requestBody["menuItemStock"]);
+				$menuItemModel->setMenuCategoryModel(new MenuCategoryModel($requestBody["menuCategoryId"]));
 
-		response($menuItemController->createMenuItem($menuItemModel));
+				response($menuItemController->createMenuItem($menuItemModel));
                 break;
             case "edit":
-		if (!checkNotNull($requestBody, ["menuItemId", "menuItemName", "menuItemDescription", "menuItemPrice", "menuItemStock", "menuCategoryId"]))
-		    response(["success" => false, "content" => "URL inválida."]);
+				if (!checkNotNull($requestBody, ["menuItemId", "menuItemName", "menuItemDescription", "menuItemPrice", "menuItemStock", "menuCategoryId"]))
+					response(["success" => false, "content" => "URL inválida."]);
 
-		$menuItemModel = new MenuItemModel();
-		$menuItemController = new MenuItemController();
+				$menuItemModel = new MenuItemModel();
+				$menuItemController = new MenuItemController();
 
-		$menuItemModel->setMenuItemId($requestBody["menuItemId"]);
-		$menuItemModel->setMenuItemName($requestBody["menuItemName"]);
-		$menuItemModel->setMenuItemDescription($requestBody["menuItemDescription"]);
-		$menuItemModel->setMenuItemPrice($requestBody["menuItemPrice"]);
-		$menuItemModel->setMenuItemStock($requestBody["menuItemStock"]);
-		$menuItemModel->setMenuCategoryModel(new MenuCategoryModel($requestBody["menuCategoryId"]));
+				$menuItemModel->setMenuItemId($requestBody["menuItemId"]);
+				$menuItemModel->setMenuItemName($requestBody["menuItemName"]);
+				$menuItemModel->setMenuItemDescription($requestBody["menuItemDescription"]);
+				$menuItemModel->setMenuItemPrice($requestBody["menuItemPrice"]);
+				$menuItemModel->setMenuItemStock($requestBody["menuItemStock"]);
+				$menuItemModel->setMenuCategoryModel(new MenuCategoryModel($requestBody["menuCategoryId"]));
 
-		response($menuItemController->editMenuItem($menuItemModel));
+				response($menuItemController->editMenuItem($menuItemModel));
                 break;
             case "remove":
-		if (!checkNotNull($requestBody, ["menuItemId"]))
-		    response(["success" => false, "content" => "URL inválida."]);
+				if (!checkNotNull($requestBody, ["menuItemId"]))
+					response(["success" => false, "content" => "URL inválida."]);
 
-		$menuItemModel = new MenuItemModel();
-		$menuItemController = new MenuItemController();
+				$menuItemModel = new MenuItemModel();
+				$menuItemController = new MenuItemController();
 
-		$menuItemModel->setMenuItemId($requestBody["menuItemId"]);
+				$menuItemModel->setMenuItemId($requestBody["menuItemId"]);
 
-		response($menuItemController->removeMenuItem($menuItemModel));
+				response($menuItemController->removeMenuItem($menuItemModel));
                 break;
-	    case "get":
-		if (!checkNotNull($requestBody, ["menuItemId"]))
-		    response(["success" => false, "content" => "URL inválida."]);
+	    	case "get":
+				if (!checkNotNull($requestBody, ["menuItemId"]))
+					response(["success" => false, "content" => "URL inválida."]);
 
-		$menuItemModel = new MenuItemModel();
-		$menuItemController = new MenuItemController();
+				$menuItemModel = new MenuItemModel();
+				$menuItemController = new MenuItemController();
 
-		$menuItemModel->setMenuItemId($requestBody["menuItemId"]);
+				$menuItemModel->setMenuItemId($requestBody["menuItemId"]);
 
-		response($menuItemController->getMenuItemById($menuItemModel));
+				response($menuItemController->getMenuItemById($menuItemModel));
                 break;
-	    case "getAll":
-		$menuItemController = new MenuItemController();
+	    	case "getAll":
+				$menuItemController = new MenuItemController();
 
-		response($menuItemController->getAllMenuItems());
-                break;
+				response($menuItemController->getAllMenuItems());
+				break;
+			case "getAllByCategory":
+				if (!checkNotNull($requestBody, ["menuCategoryId"]))
+					response(["success" => false, "content" => "URL inválida."]);
+
+				$menuItemModel = new MenuItemModel();
+				$menuItemController = new MenuItemController();
+
+				$menuItemModel->setMenuCategoryModel(new MenuCategoryModel($requestBody["menuCategoryId"]));
+				
+				response($menuItemController->getAllMenuItemsByCategory($menuItemModel));
+				break;
             default:
                 response(["success" => false, "content" => "Comando de API desconhecido."]);
         }

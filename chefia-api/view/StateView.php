@@ -6,19 +6,19 @@
     if (isset($requestBody["apiRequest"]) && !empty($requestBody["apiRequest"])) {
         switch($requestBody["apiRequest"]) {
             case "create":
-		if (!checkNotNull($requestBody, ["stateText"]))
-		    response(["success" => false, "content" => "URL inválida."]);
+                if (!checkNotNull($requestBody, ["stateText"]))
+                    response(["success" => false, "content" => "URL inválida."]);
 
                 $stateModel = new StateModel();
                 $stateController = new StateController();
 
                 $stateModel->setStateText($requestBody["stateText"]);
 
-		response($stateController->createState($stateModel));
+		        response($stateController->createState($stateModel));
                 break;
             case "edit":
-		if (!checkNotNull($requestBody, ["stateId", "stateText"]))
-		    response(["success" => false, "content" => "URL inválida."]);
+                if (!checkNotNull($requestBody, ["stateId", "stateText"]))
+                    response(["success" => false, "content" => "URL inválida."]);
 
                 $stateModel = new StateModel();
                 $stateController = new StateController();
@@ -26,11 +26,11 @@
                 $stateModel->setStateId($requestBody["stateId"]);
                 $stateModel->setStateText($requestBody["stateText"]);
 
-		response($stateController->editState($stateModel));
+		        response($stateController->editState($stateModel));
                 break;
             case "remove":
-		if (!checkNotNull($requestBody, ["stateId"]))
-		    response(["success" => false, "content" => "URL inválida."]);
+                if (!checkNotNull($requestBody, ["stateId"]))
+                    response(["success" => false, "content" => "URL inválida."]);
 
                 $stateModel = new StateModel();
                 $stateController = new StateController();
@@ -40,8 +40,8 @@
                	response($stateController->removeState($stateModel));
                 break;
             case "get":
-		if (!checkNotNull($requestBody, ["stateId"]))
-		    response(["success" => false, "content" => "URL inválida."]);
+                if (!checkNotNull($requestBody, ["stateId"]))
+                    response(["success" => false, "content" => "URL inválida."]);
 
                 $stateModel = new StateModel();
                 $stateController = new StateController();

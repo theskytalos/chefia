@@ -67,6 +67,7 @@
             if (!empty($menuImagesArray = $menuImageDAO->getAllMenuImagesByMenuItem($menuImageModel)))
                 return ["status" => true, "message" => $menuImagesArray];
             else
-        }       return ["status" => false, "message" => "Não há imagens deste item."];
+                return ["status" => false, "message" => "Não há imagens deste item."];
+        }
     }
 ?>

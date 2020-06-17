@@ -1,16 +1,17 @@
 <?php
     require_once dirname(__FILE__) . "/../model/AlternativeModel.php";
+    require_once dirname(__FILE__) . "/../model/dao/StateDAO.php";
     require_once dirname(__FILE__) . "/../model/dao/AlternativeDAO.php";
 
     class AlternativeController {
         public function createAlternative($alternativeModel) {
-            if (is_null($alternativeModel->getAlternativeText()) || is_empty($alternativeModel->getAlternativeText()))
+            if (is_null($alternativeModel->getAlternativeText()) || empty($alternativeModel->getAlternativeText()))
                 return ["status" => false, "message" => "O campo texto não pode ser nulo."];
 
             if (is_numeric($alternativeModel->getAlternativeText()))
                 return ["status" => false, "message" => "O campo texto não pode ser numérico."];
 
-            if (is_null($alternativeModel->getAlternativeNextStateModel()->getStateId()) || is_empty($alternativeModel->getAlternativeNextStateModel()->getStateId()))
+            if (is_null($alternativeModel->getAlternativeNextStateModel()->getStateId()) || empty($alternativeModel->getAlternativeNextStateModel()->getStateId()))
                 return ["status" => false, "message" => "O campo Próximo Estado não pode ser nulo."];
 
             if (!is_numeric($alternativeModel->getAlternativeNextStateModel()->getStateId()))
@@ -20,7 +21,7 @@
             if (!$stateDAO->checkExistentState($alternativeModel->getAlternativeNextStateModel()))
                 return ["status" => false, "message" => "O campo Próximo Estado está referenciando um estado que não existe."];
 
-                if (is_null($alternativeModel->getStateModel()->getStateId()) || is_empty($alternativeModel->getStateModel()->getStateId()))
+                if (is_null($alternativeModel->getStateModel()->getStateId()) || empty($alternativeModel->getStateModel()->getStateId()))
                 return ["status" => false, "message" => "O Id do estado referenciado é obrigatório."];
 
             if (!is_numeric($alternativeModel->getStateModel()->getStateId()))
@@ -41,7 +42,7 @@
         }
 
         public function editAlternative($alternativeModel) {
-            if (is_null($alternativeModel->getAlternativeId()) || is_empty($alternativeModel->getAlternativeId()))
+            if (is_null($alternativeModel->getAlternativeId()) || empty($alternativeModel->getAlternativeId()))
                 return ["status" => false, "message" => "O Id da alternativa é obrigatório."];
 
             if (!is_numeric($alternativeModel->getAlternativeId()))
@@ -54,13 +55,13 @@
             if (!$alternativeDAO->checkExistentAlternative($alternativeModel))
                 return ["status" => false, "message" => "A alternativa a ser editada não existe."];
 
-            if (is_null($alternativeModel->getAlternativeText()) || is_empty($alternativeModel->getAlternativeText()))
+            if (is_null($alternativeModel->getAlternativeText()) || empty($alternativeModel->getAlternativeText()))
                 return ["status" => false, "message" => "O campo texto é obrigatório."];
 
             if (is_numeric($alternativeModel->getAlternativeText()))
                 return ["status" => false, "message" => "O campo texto não pode ser numérico."];
 
-            if (is_null($alternativeModel->getAlternativeNextStateModel()->getStateId()) || is_empty($alternativeModel->getAlternativeNextStateModel()->getStateId()))
+            if (is_null($alternativeModel->getAlternativeNextStateModel()->getStateId()) || empty($alternativeModel->getAlternativeNextStateModel()->getStateId()))
                 return ["status" => false, "message" => "O Id do próximo estado é obrigatório."];
 
             if (!is_numeric($alternativeModel->getAlternativeNextStateModel()->getStateId()))
@@ -70,7 +71,7 @@
             if (!$stateDAO->checkExistentState($alternativeModel->getAlternativeNextStateModel()))
                 return ["status" => false, "message" => "O próximo estado referenciado não existe."];
 
-            if (is_null($alternativeModel->getStateModel()->getStateId()) || is_empty($alternativeModel->getStateModel()->getStateId()))
+            if (is_null($alternativeModel->getStateModel()->getStateId()) || empty($alternativeModel->getStateModel()->getStateId()))
                 return ["status" => false, "message" => "O Id do estado referenciado é obrigatório."] ;
 
             if (!is_numeric($alternativeModel->getStateModel()->getStateId()))
@@ -89,7 +90,7 @@
         }
 
         public function removeAlternative($alternativeModel) {
-            if (is_null($alternativeModel->getAlternativeId()) || is_empty($alternativeModel->getAlternativeId()))
+            if (is_null($alternativeModel->getAlternativeId()) || empty($alternativeModel->getAlternativeId()))
                 return ["status" => false, "message" => "O Id da alternativa é obrigatório."];
 
             if (!is_numeric($alternativeModel->getAlternativeId()))
@@ -110,7 +111,7 @@
         }
 
         public function getAllAlternativesByState($alternativeModel) {
-            if (is_null($alternativeModel->getStateModel()->getStateId()) || is_empty($alternativeModel->getStateModel()->getStateId()))
+            if (is_null($alternativeModel->getStateModel()->getStateId()) || empty($alternativeModel->getStateModel()->getStateId()))
                 return ["status" => false, "message" => "O Id do estado referenciado é obrigatório."];
 
             if (!is_numeric($alternativeModel->getStateModel()->getStateId()))
@@ -123,6 +124,7 @@
             if (!$stateDAO->checkExistentState($alternativeModel->getStateModel())) 
                 return ["status" => false, "message" => "O estado referenciado não existe."];
 
+            $alternativeDAO = new AlternativeDAO();
             if (!empty($alternativesArray = $alternativeDAO->getAllAlternativesByState($alternativeModel))) 
                 return ["status" => true, "message" => $alternativesArray];
             else

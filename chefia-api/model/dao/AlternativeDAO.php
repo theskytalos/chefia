@@ -1,6 +1,8 @@
 <?php
     require_once dirname(__FILE__) . "/../../Connection.php";
     require_once dirname(__FILE__) . "/../AlternativeModel.php";
+    require_once dirname(__FILE__) . "/../MenuCategoryModel.php";
+    require_once dirname(__FILE__) . "/../MenuItemModel.php";
 
     class AlternativeDAO {
         public function createAlternative($alternativeModel) {
@@ -38,7 +40,7 @@
         public function getAllAlternativesByState($alternativeModel) {
             global $pdo;
 
-            $alternativeQuery = $pdo->prepare("SELECT alternatives_id, alternatives_text, alternatives_next_state_id_fk, states_id_fk FROM alternatives WHERE states_id_fk = ?;");
+            $alternativeQuery = $pdo->prepare("SELECT alternatives_id, alternatives_text, alternatives_next_state_id_fk, states_id_fk, menu_categories_id_fk, menu_items_id_fk FROM alternatives WHERE states_id_fk = ?;");
             $alternativeQuery->bindValue(1, $alternativeModel->getStateModel()->getStateId(), PDO::PARAM_INT);
 
             $alternativesArray = array();
@@ -52,6 +54,8 @@
                         $alternativeModel->setAlternativeText($row["alternatives_text"]);
                         $alternativeModel->setAlternativeNextStateModel(new StateModel($row["alternatives_next_state_id_fk"]));
                         $alternativeModel->setStateModel(new StateModel($row["states_id_fk"]));
+                        $alternativeModel->setMenuCategoryModel(new MenuCategoryModel($row["menu_categories_id_fk"]));
+                        $alternativeModel->setMenuItemModel(new MenuItemModel($row["menu_items_id_fk"]));
 
                         array_push($alternativesArray, $alternativeModel);
                     }
