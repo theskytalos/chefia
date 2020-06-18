@@ -60,5 +60,13 @@
         public function getAllInteractions() {
             global $pdo;   
         }
+
+        public function countAllInteractions() {
+            global $pdo;
+
+            $interactionQuery = $pdo->query("SELECT COUNT(interactions_id) AS interactions_count FROM interactions;");
+            
+            return $interactionQuery ? $interactionQuery->fetch()["interactions_count"] : 0;
+        }
     }
 ?>

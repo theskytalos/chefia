@@ -16,11 +16,17 @@
         }
 
         public function getInteraction($interactionId) {
-
+            
         }
 
         public function getAllInteractions() {
             
+        }
+
+        public function countAllInteractions() {
+            $interactionDAO = new InteractionDAO();
+
+            return $interactionDAO->countAllInteractions();
         }
     }
 ?>

@@ -22,5 +22,9 @@
         public function getAllTransitions() {
             
         }
+
+        public function getAllTransitionsByOwnerInteraction($interactionOwnerId) {
+
+        }
     }
 ?>
