@@ -13,7 +13,7 @@ CREATE TABLE interactions (interactions_id 		INT PRIMARY KEY AUTO_INCREMENT,
                            FOREIGN KEY (contexts_id_fk) REFERENCES contexts (contexts_id));
                            
 CREATE TABLE transitions_types (transitions_types_id	INT PRIMARY KEY AUTO_INCREMENT,
-								transitions_types_name	VARCHAR(16));
+								transitions_types_name	VARCHAR(64));
                            
 CREATE TABLE interactions_transitions (interactions_transitions_id		INT PRIMARY KEY AUTO_INCREMENT,
 									   interactions_transitions_from	INT,
@@ -31,7 +31,7 @@ CREATE TABLE items 	(items_id			INT PRIMARY KEY AUTO_INCREMENT,
 					 items_stock		INT NULL,
                      interactions_id_fk	INT,
                      FOREIGN KEY (interactions_id_fk) REFERENCES interactions (interactions_id));
-                                       
+
 -- Replication of Sent Example --
 
 INSERT INTO contexts (contexts_name) VALUES ('Saudações');

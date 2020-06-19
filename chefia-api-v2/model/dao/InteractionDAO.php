@@ -20,7 +20,7 @@
             global $pdo;
 
             $interactionQuery = $pdo->prepare("SELECT interactions_content, contexts_id_fk FROM interactions WHERE interactions_id = :interactions_id;");
-            $interactionQuery->bindParam("interactions_id", $interactionModel->getInteractionId(), PDO::PARAM_INT);
+            $interactionQuery->bindValue(":interactions_id", $interactionModel->getInteractionId(), PDO::PARAM_INT);
 
             if ($interactionQuery->execute()) {
                 if ($interactionQuery->rowCount() == 1) {
@@ -59,6 +59,20 @@
 
         public function getAllInteractions() {
             global $pdo;   
+        }
+
+        public function checkExistentInteraction($interactionModel) {
+            global $pdo;
+
+            $interactionQuery = $pdo->prepare("SELECT COUNT(interactions_id) AS interactions_count FROM interactions WHERE interactions_id = :interactions_id;");
+            $interactionQuery->bindValue(":interactions_id", $interactionModel->getInteractionId(), PDO::PARAM_INT);
+
+            if ($interactionQuery->execute())
+                if ($interactionQuery->rowCount() == 1)
+                    if ((int)$interactionQuery->fetch()["interactions_count"] == 1)
+                        return true;
+
+            return false;
         }
 
         public function countAllInteractions() {

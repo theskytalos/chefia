@@ -21,7 +21,7 @@
             global $pdo;
 
             $transitionQuery = $pdo->prepare("SELECT interactions_transitions_from, interactions_transitions_to, transitions_types_id_fk, interactions_transitions_value FROM interactions_transitions WHERE interactions_transitions_id = :interactions_transitions_id;");
-            $transitionQuery->bindParam(":interactions_transitions_id", $transitionModel->getTransitionId(), PDO::PARAM_INT);
+            $transitionQuery->bindValue(":interactions_transitions_id", $transitionModel->getTransitionId(), PDO::PARAM_INT);
 
             if ($transitionQuery->execute()) {
                 if ($transitionQuery->rowCount() == 1) {
@@ -42,8 +42,8 @@
         public function getAllTransitionsByOwnerInteraction($transitionModel) {
             global $pdo;
 
-            $transitionQuery = $pdo->prepare("SELECT interactions_transitions_id, interactions_transitions_to, transitions_types_id_fk, interactions_transitions_value FROM interactions_transitions WHERE interactions_transitions_from = :interactions_transitions_from;");
-            $transitionQuery->bindParam(":interactions_transitions_from", $transitionModel->getTransitionFromModel()->getInteractionId(), PDO::PARAM_INT);
+            $transitionQuery = $pdo->prepare("SELECT interactions_transitions_id, interactions_transitions_from, interactions_transitions_to, transitions_types_id_fk, interactions_transitions_value FROM interactions_transitions WHERE interactions_transitions_from = :interactions_transitions_from;");
+            $transitionQuery->bindValue(":interactions_transitions_from", $transitionModel->getTransitionFromModel()->getInteractionId(), PDO::PARAM_INT);
 
             $transitionsArray = array();
 

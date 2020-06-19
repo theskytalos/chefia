@@ -1,5 +1,5 @@
 <?php
-    require_once dirname(__FILE__) . "/../controller/ContextController.php";
+    require_once dirname(__FILE__) . "/../controller/ChatController.php";
     require_once dirname(__FILE__) . "/../Rest.php";
 
     if (isset($requestBody["apiRequest"]) && !empty($requestBody["apiRequest"])) {
@@ -10,7 +10,13 @@
 
                 $chatController = new ChatController();
                 
-                response($chatController->getNextChat($requestBody["interactionId"]));
+                try {
+                    response(["success" => true, "content" => $chatController->getNextChat($requestBody["interactionId"])]);
+                } catch (Exception $e) {
+                    response(["success" => false, "content" => $e->getMessage()]);
+                } finally {
+                    response(["success" => false, "content" => "Um erro inesperado aconteceu."]);
+                }
 
                 break;
             default:
@@ -18,4 +24,6 @@
         }
     } else
         response(["success" => false, "content" => "URL inválida."]);
+
+    exit();
 ?>

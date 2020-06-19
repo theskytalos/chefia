@@ -19,7 +19,7 @@
             global $pdo;
 
             $transitionTypeQuery = $pdo->prepare("SELECT transitions_types_name FROM transitions_types WHERE transitions_types_id = :transitions_types_id;");
-            $transitionTypeQuery->bindParam(":transitions_types_id", $transitionTypeModel->getTransitionTypeId(), PDO::PARAM_INT);
+            $transitionTypeQuery->bindValue(":transitions_types_id", $transitionTypeModel->getTransitionTypeId(), PDO::PARAM_INT);
 
             if ($transitionTypeQuery->execute()) {
                 if ($transitionTypeQuery->rowCount() == 1) {
@@ -36,6 +36,19 @@
 
         public function getAllTransitionTypes() {
             global $pdo;
+        }
+
+        public function checkExistentTransitionType($transitionTypeModel) {
+            global $pdo;
+
+            $transitionTypeQuery = $pdo->prepare("SELECT transitions_types_id FROM transitions_types WHERE transitions_types_id = :transitions_types_id;");
+            $transitionTypeQuery->bindValue(":transitions_types_id", $transitionTypeModel->getTransitionTypeId(), PDO::PARAM_INT);
+
+            if ($transitionTypeQuery->execute())
+                if ($transitionTypeQuery->rowCount() == 1)
+                    return true;
+
+            return false;
         }
     }
 ?>
