@@ -5,7 +5,7 @@
     require_once dirname(__FILE__) . "/ItemController.php";
 
     class ChatController {
-        public function getNextChat($interactionId) {
+        public function getNextChat($interactionId, $itemAddedToCart) {
             if (is_null($interactionId))
                 throw new Exception("O id da interação é obrigatório.");
 
@@ -31,6 +31,13 @@
 
             $itemController = new ItemController();
             $items = $itemController->getAllItemsByInteraction($interactionId);
+
+            // Check if there is a item to substitute in the message
+            if (!empty($itemAddedToCart) && is_numeric($itemAddedToCart)) {
+                $item = $itemController->getItem($itemAddedToCart);
+                if (!is_null($item))
+                    $interaction->setInteractionContent(str_replace("__ITEM__", $item->getItemName(), $interaction->getInteractionContent()));
+            }
 
             $chatModel = new ChatModel();
             $chatModel->setChatInteraction($interaction);

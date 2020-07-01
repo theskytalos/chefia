@@ -17,7 +17,22 @@
         }
 
         public function getItem($itemId) {
-            
+            if (is_null($itemId))
+                throw new Exception("O id do item é obrigatório.");
+
+            if (!is_numeric($itemId))
+                throw new Exception("O id do item deve ser numérico.");
+
+            if ((int)$itemId < 0)
+                throw new Exception("O id da item não pode ser negativo.");
+
+            if (!$this->checkExistentItem($itemId))
+                throw new Exception("Item inexistente.");
+
+            $itemModel = new ItemModel($itemId);
+            $itemDAO = new ItemDAO();
+
+            return $itemDAO->getItem($itemModel);
         }
 
         public function getAllItems() {
@@ -46,6 +61,22 @@
             $itemModel->setInteractionModel(new InteractionModel($interactionId));
 
             return $itemDAO->getAllItemsByInteraction($itemModel);
+        }
+
+        public function checkExistentItem($itemId) {
+            if (is_null($itemId))
+                throw new Exception("O id da interação é obrigatório.");
+
+            if (!is_numeric($itemId))
+                throw new Exception("O id da interação deve ser numérico.");
+
+            if ((int)$itemId < 0)
+                throw new Exception("O id da interação não pode ser negativo.");
+
+            $itemModel = new ItemModel($itemId);
+            $itemDAO = new ItemDAO();
+
+            return $itemDAO->checkExistentItem($itemModel);
         }
     }
 ?>

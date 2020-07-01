@@ -10,7 +10,14 @@
 
                 $contextController = new ContextController();
 
-                response($contextController->createContext($requestBody["contextName"]));
+                try {
+                    response($contextController->createContext($requestBody["contextName"]));
+                } catch (Exception $e) {
+
+                } finally {
+                    
+                }
+                
                 break;
             case "edit":
                 break;

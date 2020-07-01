@@ -29,6 +29,8 @@
             break;
     }
 
+    date_default_timezone_set("America/Sao_Paulo");
+
     // Every server response is 200 OK, whether it's an error or not.
     function response($responseData) {
         if (is_array($responseData)) {

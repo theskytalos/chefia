@@ -29,7 +29,7 @@
                     $itemModel->setItemName($row["items_name"]);
                     $itemModel->setItemDescription($row["items_description"]);
                     $itemModel->setItemPrice($row["items_price"]);
-                    $itemModel->setItemStock($row["item_stock"]);
+                    $itemModel->setItemStock($row["items_stock"]);
                     $itemModel->setInteractionModel(new InteractionModel($row["interactions_id_fk"]));
 
                     return $itemModel;
@@ -56,7 +56,7 @@
                         $itemModel->setItemName($row["items_name"]);
                         $itemModel->setItemDescription($row["items_description"]);
                         $itemModel->setItemPrice($row["items_price"]);
-                        $itemModel->setItemStock($row["item_stock"]);
+                        $itemModel->setItemStock($row["items_stock"]);
                         $itemModel->setInteractionModel(new InteractionModel($row["interactions_id_fk"]));
 
                         array_push($itemsArray, $itemModel);
@@ -71,5 +71,17 @@
             global $pdo;
         }
 
+        public function checkExistentItem($itemModel) {
+            global $pdo;
+
+            $itemQuery = $pdo->prepare("SELECT items_name, items_description, items_price, items_stock, interactions_id_fk FROM items WHERE items_id = :items_id;");
+            $itemQuery->bindValue(":items_id", $itemModel->getItemId(), PDO::PARAM_INT);
+
+            if ($itemQuery->execute())
+                if ($itemQuery->rowCount() == 1)
+                    return true;
+
+            return false;
+        }
     }
 ?>

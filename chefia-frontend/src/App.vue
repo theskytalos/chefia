@@ -1,17 +1,15 @@
 <template>
   <v-container fluid>
-    <Main/>
+    <router-view></router-view>
   </v-container>
 </template>
 
 <script>
-import Main from './pages/Main';
-
 export default {
   name: 'App',
 
   components: {
-    Main
+
   },
 
   data: () => ({

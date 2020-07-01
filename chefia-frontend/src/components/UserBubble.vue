@@ -18,6 +18,9 @@ export default {
     },
     props: {
         text: String
+    },
+    mounted: function () {
+        this.$vuetify.goTo(this);
     }
 }
 </script>

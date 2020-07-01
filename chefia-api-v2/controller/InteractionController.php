@@ -2,6 +2,7 @@
     require_once dirname(__FILE__) . "/../model/InteractionModel.php";
     require_once dirname(__FILE__) . "/../model/dao/InteractionDAO.php";
     require_once dirname(__FILE__) . "/ContextController.php";
+    require_once dirname(__FILE__) . "/GeneralSettingController.php";
 
     class InteractionController {
         public function createInteraction() {
@@ -37,6 +38,9 @@
     
             $interaction = $interactionDAO->getInteraction($interactionModel);
 
+            $generalSettingController = new GeneralSettingController();
+            $interaction->setInteractionContent($generalSettingController->replaceSettings($interaction->getInteractionContent()));
+
             $contextController = new ContextController();
             $context = $contextController->getContext($interaction->getContextModel()->getContextId());
 
@@ -50,6 +54,9 @@
             $interactionDAO = new InteractionDAO();
 
             $interaction = $interactionDAO->getFirstInteraction();
+
+            $generalSettingController = new GeneralSettingController();
+            $interaction->setInteractionContent($generalSettingController->replaceSettings($interaction->getInteractionContent()));
 
             $contextController = new ContextController();
             $context = $contextController->getContext($interaction->getContextModel()->getContextId());

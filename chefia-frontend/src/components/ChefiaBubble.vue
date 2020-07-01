@@ -6,59 +6,128 @@
             </div>
         </v-card-text>
         <v-card-actions v-if="actionsAvailable && options.length !== 0" class="horiz-scroll">
-            <v-btn color="indigo" dark v-for="(option, index) in options" v-bind:key="index" v-on:click="userSpeechHandler(option.alternativeText); getNextChatHandler(option.nextStateId); getItemsHandler(option.menuCategoriesId); actionsAvailable = false;" class="horiz-scroll-item">{{ option.alternativeText }}</v-btn>
+            <v-btn color="indigo" dark v-for="(option, index) in options" v-bind:key="index" v-on:click="userSpeechHandler(option.transitionText); getNextChatHandler(option.nextInteractionId);" class="horiz-scroll-item">{{ option.transitionText }}</v-btn>
         </v-card-actions>
+        <AddressPayMethodDialog v-model="showAddressPayMethodDialog" v-bind:send-request-handler="preSendRequest"/>
     </v-card>
-    <v-card class="mr-auto my-3" v-else-if="type === 'menu'">
-        <v-card-text class="horiz-scroll">
-            <v-card min-height="100%" min-width="250" max-width="250" class="horiz-scroll-item mr-3" v-for="item in items" v-bind:key="item.menuItemId">
-                <v-card-text>
-                    <p class="display-1 text--primary">
-                        {{ item.menuItemName }}
-                    </p>
-                    <p class="subtitle-2 green--text">
-                        R$ {{ item.menuItemPrice }}
-                    </p>
-                    <v-divider></v-divider>
-                    <div class="text--primary mt-3">
-                        {{ item.menuItemDescription }}
-                    </div>
-                </v-card-text>
-                <v-card-actions class="mt-auto">
-                    <v-btn text color="indigo" class="mx-auto" v-on:click.stop="currentItem = item; showDishDialog = true">
-                        DAR UMA OLHADA!
-                    </v-btn>
+    <div v-else-if="type === 'menu'">
+        <v-card class="mr-auto my-3 tri-right left-top">
+            <v-card-text>
+                <div class="text--primary">
+                    {{ text }}
+                </div>
+            </v-card-text>
+        </v-card>
+        <v-card class="mr-auto my-3" v-if="!requestWatch">
+            <v-card-text class="horiz-scroll">
+                <v-card min-height="100%" min-width="250" max-width="250" class="horiz-scroll-item mr-3" v-for="item in items" v-bind:key="item.itemId">
+                    <v-card-text>
+                        <p class="display-1 text--primary">
+                            {{ item.itemName }}
+                        </p>
+                        <p class="subtitle-2 green--text">
+                            R$ {{ item.itemPrice }}
+                        </p>
+                        <v-divider></v-divider>
+                        <div class="text--primary mt-3">
+                            {{ item.itemDescription }}
+                        </div>
+                    </v-card-text>
+                    <v-card-actions class="mt-auto">
+                        <v-btn text color="indigo" class="mx-auto" v-on:click.stop="currentItem = item; showDishDialog = true">
+                            Ver Item
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-card-text>
+            <DishDialog v-model="showDishDialog" v-bind:item="currentItem" v-bind:add-to-cart-handler="addToCart" />
+        </v-card>
+        <v-card class="mr-auto my-3 tri-right left-top" v-if="actionsAvailable && options.length !== 0">
+            <v-card-text>
+                <v-card-actions class="horiz-scroll">
+                    <v-btn color="indigo" dark v-for="(option, index) in options" v-bind:key="index" v-on:click="userSpeechHandler(option.transitionText); getNextChatHandler(option.nextInteractionId);" class="horiz-scroll-item">{{ option.transitionText }}</v-btn>
                 </v-card-actions>
-            </v-card>
+            </v-card-text>
+        </v-card>
+    </div>
+    <v-card class="mr-auto my-3 tri-right left-top" v-else-if="type === 'image'">
+        <v-card-text>
+            <div class="text--primary">
+                <img v-bind:src="imageUrl" />
+            </div>
         </v-card-text>
-        <DishDialog v-model="showDishDialog" v-bind:item="currentItem" />
     </v-card>
 </template>
 
 <script>
 import DishDialog from './DishDialog';
+import AddressPayMethodDialog from './AdressPayMethodDialog';
 
 export default {
     name: 'ChefiaBubble',
     data: function () {
         return {
             actionsAvailable: true,
+            itemsAvailable: true,
             showDishDialog: false,
+            showAddressPayMethodDialog: false,
             currentItem: {}
         }
     },
     components: {
-        DishDialog
+        DishDialog,
+        AddressPayMethodDialog
     },
     props: {
         type: String,
         text: String,
+        imageUrl: String,
         options: Array,
+        transitions: Array,
         items: Array,
+        speechesWatch: Array,
+        requestWatch: Boolean,
         getNextChatHandler: Function,
-        getItemsHandler: Function,
-        getItemHandler: Function,
-        userSpeechHandler: Function
+        userSpeechHandler: Function,
+        addToCartHandler: Function,
+        sendRequestHandler: Function
+    },
+    methods: {
+        addToCart(item, quantity, observations) {
+            this.addToCartHandler(item, quantity, observations);
+
+            /* CHECK FOR 'add_to_cart' TRANSITIONS */
+            const addToCartTransition = this.transitions.find(element => element.transitionType === 'add_to_cart');
+
+            if (addToCartTransition !== undefined) {
+                this.getNextChatHandler(addToCartTransition.transitionTo, item.itemId); 
+                this.actionsAvailable = false;
+            }
+        },
+        preSendRequest(requestPayMethod, requestChangeFor, requestAddress) {
+            if (this.transitions) {
+                const requestSentTransition = this.transitions.find(element => element.transitionType === 'request_sent');
+
+                if (requestSentTransition !== undefined)
+                    this.sendRequestHandler(requestPayMethod, requestChangeFor, requestAddress, requestSentTransition.transitionTo);
+            }
+        }
+    },
+    mounted: function () {
+        this.$vuetify.goTo(this);
+
+        if (this.transitions) {
+            const requestSentTransition = this.transitions.find(element => element.transitionType === 'request_sent');
+
+            if (requestSentTransition !== undefined)
+                this.showAddressPayMethodDialog = true;
+                //this.sendRequestHandler(1, 1, requestSentTransition.transitionTo);
+        }
+    },
+    watch: {
+        speechesWatch: function () {
+            this.actionsAvailable = false;
+        }
     }
 }
 </script>
