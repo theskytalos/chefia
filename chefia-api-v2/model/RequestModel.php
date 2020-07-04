@@ -13,7 +13,16 @@
         private $requestNumber;
         private $requestComplement;
         private $requestReference;
+        private $requestStatus; // 1 = Pendente; 2 = Recusado; 3 = Aceito; 4 = Saiu para Entrega; 5 = Entregue;
         private $requestItems;
+
+        function __construct() {
+            switch (func_num_args()) {
+                case 1:
+                    $this->setRequestId(func_get_arg(0));
+                    break;
+            }
+        }
 
         public function getRequestId() {
             return $this->requestId;
@@ -119,6 +128,14 @@
             $this->requestReference = $requestReference;
         }
 
+        public function getRequestStatus() {
+            return $this->requestStatus;
+        }
+
+        public function setRequestStatus($requestStatus) {
+            $this->requestStatus = $requestStatus;
+        }
+
         public function getRequestItems() {
             return $this->requestItems;
         }
@@ -141,6 +158,7 @@
                     "requestNumber" => $this->getRequestNumber(),
                     "requestComplement" => $this->getRequestComplement(),
                     "requestReference" => $this->getRequestReference(),
+                    "requestStatus" => $this->getRequestStatus(),
                     "requestItems" => $this->getRequestItems()];
         }
     }

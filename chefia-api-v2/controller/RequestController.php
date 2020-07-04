@@ -102,16 +102,17 @@
             $requestModel->setRequestCEP($requestCEP);
             $requestModel->setRequestUF($requestUF);
             $requestModel->setRequestCity($requestCity);
-            $requestModel->setRequestNeighbourhood($requestCity);
+            $requestModel->setRequestNeighbourhood($requestNeighbourhood);
             $requestModel->setRequestStreet($requestStreet);
             $requestModel->setRequestNumber($requestNumber);
             $requestModel->setRequestComplement($requestComplement);
             $requestModel->setRequestReference($requestReference);
+            $requestModel->setRequestStatus(1);
             $requestModel->setRequestItems($requestItemsArray);
 
             $requestDAO = new RequestDAO();
-            if ($requestDAO->createRequest($requestModel))
-                return "Pedido realizado com sucesso.";
+            if (($requestId = $requestDAO->createRequest($requestModel)) != false)
+                return array("Pedido realizado com sucesso.", $requestId);
             else
                 throw new Exception("Não foi possível realizar o pedido.");
         }
@@ -147,6 +148,55 @@
             }
 
             return $requestsArray;
+        }
+
+        public function getRequestStatus($requestId) {
+            if (is_null($requestId) || empty($requestId))
+                throw new Exception("O id do pedido não pode ser nulo.");
+
+            if (!is_numeric($requestId))
+                throw new Exception("O id do pedido deve ser numérico.");
+
+            if ((int)$requestId < 1)
+                throw new Exception("O id do pedido é inválido.");
+
+            $requestDAO = new RequestDAO();
+
+            if (($requestModel = $requestDAO->getRequestStatus(new RequestModel($requestId))) != NULL)
+                return $requestModel->getRequestStatus();
+            else
+                throw new Exception("Pedido inexistente.");
+        }
+
+        public function setRequestStatus($requestId, $requestStatus) {
+            if (is_null($requestId) || empty($requestId))
+                throw new Exception("O id do pedido não pode ser nulo.");
+
+            if (!is_numeric($requestId))
+                throw new Exception("O id do pedido deve ser numérico.");
+
+            if ((int)$requestId < 1)
+                throw new Exception("O id do pedido é inválido.");
+
+            if (is_null($requestStatus) || empty($requestStatus))
+                throw new Exception("O status do pedido não pode ser nulo.");
+
+            if (!is_numeric($requestStatus))
+                throw new Exception("O status do pedido deve ser numérico.");
+
+            if ((int)$requestStatus < 1)
+                throw new Exception("O status do pedido é inválido.");
+
+            $requestModel = new RequestModel();
+            $requestDAO = new RequestDAO();
+
+            $requestModel->setRequestId($requestId);
+            $requestModel->setRequestStatus($requestStatus);
+
+            if ($requestDAO->setRequestStatus($requestModel))
+                return "Status do pedido alterado com sucesso.";
+            else
+                throw new Exception("Não foi possível alterar o status do pedido.");
         }
 
         public function getAllRequests() {

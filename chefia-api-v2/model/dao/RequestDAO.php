@@ -7,7 +7,7 @@
         public function createRequest($requestModel) {
             global $pdo;
 
-            $requestQuery = $pdo->prepare("INSERT INTO requests (requests_datetime, requests_total_cost, requests_pay_method, requests_change_for, requests_cep, requests_uf, requests_city, requests_neighbourhood, requests_street, requests_number, requests_complement, requests_reference) VALUES (:requests_datetime, :requests_total_cost, :requests_pay_method, :requests_change_for, :requests_cep, :requests_uf, :requests_city, :requests_neighbourhood, :requests_street, :requests_number, :requests_complement, :requests_reference);");
+            $requestQuery = $pdo->prepare("INSERT INTO requests (requests_datetime, requests_total_cost, requests_pay_method, requests_change_for, requests_cep, requests_uf, requests_city, requests_neighbourhood, requests_street, requests_number, requests_complement, requests_reference, requests_status) VALUES (:requests_datetime, :requests_total_cost, :requests_pay_method, :requests_change_for, :requests_cep, :requests_uf, :requests_city, :requests_neighbourhood, :requests_street, :requests_number, :requests_complement, :requests_reference, :requests_status);");
             $requestQuery->bindValue(":requests_datetime", $requestModel->getRequestDatetime(), PDO::PARAM_STR);
             $requestQuery->bindValue(":requests_total_cost", $requestModel->getRequestTotalCost(), PDO::PARAM_STR);
             $requestQuery->bindValue(":requests_pay_method", $requestModel->getRequestPayMethod(), PDO::PARAM_INT);
@@ -20,6 +20,7 @@
             $requestQuery->bindValue(":requests_number", $requestModel->getRequestNumber(), PDO::PARAM_INT);
             $requestQuery->bindValue(":requests_complement", $requestModel->getRequestComplement(), PDO::PARAM_STR);
             $requestQuery->bindValue(":requests_reference", $requestModel->getRequestReference(), PDO::PARAM_STR);
+            $requestQuery->bindValue(":requests_status", $requestModel->getRequestStatus(), PDO::PARAM_STR);
 
             $pdo->beginTransaction();
 
@@ -39,7 +40,7 @@
                 }
 
                 $pdo->commit();
-                return true;
+                return $requestId;
             }
 
             return false;
@@ -60,8 +61,9 @@
         public function getTodaysRequests() {
             global $pdo;
 
-            $requestQuery = $pdo->prepare("SELECT requests_id, requests_datetime, requests_total_cost, requests_pay_method, requests_change_for, requests_cep, requests_uf, requests_city, requests_neighbourhood, requests_street, requests_number, requests_complement, requests_reference FROM requests WHERE requests_datetime = :requests_datetime;");
-            $requestQuery->bindValue(":requests_datetime", date('Y-m-d'), PDO::PARAM_STR);
+            $requestQuery = $pdo->prepare("SELECT requests_id, requests_datetime, requests_total_cost, requests_pay_method, requests_change_for, requests_cep, requests_uf, requests_city, requests_neighbourhood, requests_street, requests_number, requests_complement, requests_reference, requests_status FROM requests WHERE requests_datetime >= :requests_datetime_low AND requests_datetime < :requests_datetime_high ORDER BY requests_datetime DESC;");
+            $requestQuery->bindValue(":requests_datetime_low", (new DateTime())->format("Y-m-d"), PDO::PARAM_STR);
+            $requestQuery->bindValue(":requests_datetime_high", (new DateTime("+1 day"))->format("Y-m-d"), PDO::PARAM_STR);
 
             $requestsArray = array();
 
@@ -81,6 +83,7 @@
                     $requestModel->setRequestNumber($row["requests_number"]);
                     $requestModel->setRequestComplement($row["requests_complement"]);
                     $requestModel->setRequestReference($row["requests_reference"]);
+                    $requestModel->setRequestStatus($row["requests_status"]);
 
                     $requestItemsArray = array();
 
@@ -105,6 +108,38 @@
             }
 
             return $requestsArray;
+        }
+
+        public function getRequestStatus($requestModel) {
+            global $pdo;
+
+            $requestQuery = $pdo->prepare("SELECT requests_status FROM requests WHERE requests_id = :requests_id;");
+            $requestQuery->bindValue(":requests_id", $requestModel->getRequestId(), PDO::PARAM_INT);
+
+            if ($requestQuery->execute()) {
+                if ($requestQuery->rowCount() == 1) {
+                    $row = $requestQuery->fetch();
+
+                    $requestModel->setRequestStatus($row["requests_status"]);
+
+                    return $requestModel;
+                }
+            }
+
+            return NULL;
+        }
+
+        public function setRequestStatus($requestModel) {
+            global $pdo;
+
+            $requestQuery = $pdo->prepare("UPDATE requests SET requests_status = :status WHERE requests_id = :id;");
+            $requestQuery->bindValue(":status", $requestModel->getRequestStatus(), PDO::PARAM_INT);
+            $requestQuery->bindValue(":id", $requestModel->getRequestId(), PDO::PARAM_INT);
+
+            if ($requestQuery->execute())
+                return true;
+
+            return false;
         }
 
         public function getAllRequests() {

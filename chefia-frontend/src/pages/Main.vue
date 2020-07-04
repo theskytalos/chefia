@@ -70,6 +70,10 @@ export default {
           speeches: [],
           interactions: [],
           cart: [],
+          request: {
+            requestId: 0,
+            requestStatus: 0
+          },
           isRequestDone: false,
           showCartDialog: false,
           snackbar: false,
@@ -80,8 +84,8 @@ export default {
       this.getWelcomeMessage();
     },
     methods: {
-      getWelcomeMessage() {
-        this.getClientSettings();
+      async getWelcomeMessage() {
+        await this.getClientSettings();
         this.getNextChat(0);
       },
       getClientSettings() {
@@ -159,7 +163,7 @@ export default {
               this.interactions.push(interactionObject);
               this.speeches.push(interactionObject);
 
-              autoTransition = parseInt(autoTransition);
+              autoTransition = parseInt(autoTransition, 10);
 
               if (Number.isInteger(autoTransition))
                 this.getNextChat(autoTransition);
@@ -198,7 +202,13 @@ export default {
             if (response.data.success === true) {
               this.isRequestDone = true;
               this.cart = [];
+              
+              if (response.data.requestId)
+                this.request.requestId = parseInt(response.data.requestId, 10);
+
               this.getNextChat(requestTo);
+
+              this.watchRequestStatusChanges();
             } else {
               this.errorText = response.data.content;
               this.snackbar = true;
@@ -207,10 +217,61 @@ export default {
             console.log(error);
           });
       },
+      watchRequestStatusChanges() {
+        var refreshRequestStatus = setInterval(() => {
+          if (!this.isRequestDone)
+            clearInterval(refreshRequestStatus);
+
+          Api().post('RequestView.php', { apiRequest: 'getRequestStatus', requestId: this.request.requestId })
+            .then((response) => {
+              if (response.data.success === true) {
+                if (this.request.requestStatus === 0) {
+                  this.request.requestStatus = parseInt(response.data.content, 10);
+                  return;
+                }
+
+                if (parseInt(response.data.content, 10) != this.request.requestStatus) {
+                  this.request.requestStatus = parseInt(response.data.content, 10);
+                  
+                  let interactionObject;
+                  let optionsArray = [];
+                  let transitionsArray = [];
+
+                  switch (response.data.content) {
+                    case "2":
+                      interactionObject = { type: "chatbot", interactionContent: "Seu pedido foi recusado!" };
+                      break;
+                    case "3":
+                      interactionObject = { type: "chatbot", interactionContent: "Seu pedido foi aceito e está sendo preparado." };
+                      break;
+                    case "4":
+                      interactionObject = { type: "chatbot", interactionContent: "Seu pedido saiu para entrega." };
+                      break;
+                    case "5":
+                      interactionObject = { type: "chatbot", interactionContent: "Seu pedido foi entregue." };
+                      clearInterval(refreshRequestStatus);
+                      break;
+                  }
+
+                  interactionObject.interactionAlternatives = optionsArray;
+                  interactionObject.transitions = transitionsArray;
+
+                  this.speeches.push(interactionObject);
+                }
+              } else {
+                this.errorText = response.data.content;
+                this.snackbar = true;
+              }
+            }).catch((error) => {
+              console.log(error);
+            });
+        }, 5000);
+      },
       resetConversation() {
         this.interactions = [];
         this.speeches = [];
         this.cart = [];
+        this.requestId = 0;
         this.isRequestDone = false;
         console.clear();
         this.getWelcomeMessage();

@@ -51,7 +51,8 @@ CREATE TABLE requests (requests_id				INT PRIMARY KEY AUTO_INCREMENT,
                        requests_street			VARCHAR(2048),
                        requests_number 			INT,
                        requests_complement		VARCHAR(2048),
-                       requests_reference		VARCHAR(2048));
+                       requests_reference		VARCHAR(2048),
+                       requests_status			INT);
                        
 CREATE TABLE requests_items (requests_id_fk		INT,
 							 items_id_fk		INT,
