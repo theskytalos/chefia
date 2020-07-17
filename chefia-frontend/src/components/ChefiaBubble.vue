@@ -5,10 +5,12 @@
                 {{ text }}
             </div>
         </v-card-text>
-        <v-card-actions v-if="actionsAvailable && options.length !== 0" class="horiz-scroll">
+        <v-card-actions v-if="actionsAvailable && options.length !== 0 || sugestionTransition" class="horiz-scroll">
             <v-btn color="indigo" dark v-for="(option, index) in options" v-bind:key="index" v-on:click="userSpeechHandler(option.transitionText); getNextChatHandler(option.nextInteractionId);" class="horiz-scroll-item">{{ option.transitionText }}</v-btn>
+            <v-btn color="indigo" dark v-if="sugestionTransition" v-on:click.stop="userSpeechHandler('Enviar Sugestão'); showSugestionDialog = true;">Enviar Sugestão</v-btn>
         </v-card-actions>
         <AddressPayMethodDialog v-model="showAddressPayMethodDialog" v-bind:send-request-handler="preSendRequest"/>
+        <SugestionDialog v-model="showSugestionDialog" />
     </v-card>
     <div v-else-if="type === 'menu'">
         <v-card class="mr-auto my-3 tri-right left-top">
@@ -62,6 +64,7 @@
 <script>
 import DishDialog from './DishDialog';
 import AddressPayMethodDialog from './AdressPayMethodDialog';
+import SugestionDialog from './SugestionDialog';
 
 export default {
     name: 'ChefiaBubble',
@@ -69,14 +72,17 @@ export default {
         return {
             actionsAvailable: true,
             itemsAvailable: true,
+            sugestionTransition: false,
             showDishDialog: false,
             showAddressPayMethodDialog: false,
+            showSugestionDialog: false,
             currentItem: {}
         }
     },
     components: {
         DishDialog,
-        AddressPayMethodDialog
+        AddressPayMethodDialog,
+        SugestionDialog
     },
     props: {
         type: String,
@@ -118,10 +124,13 @@ export default {
 
         if (this.transitions) {
             const requestSentTransition = this.transitions.find(element => element.transitionType === 'request_sent');
+            const sendSugestionTransition = this.transitions.find(element => element.transitionType === 'send_sugestion');
 
             if (requestSentTransition !== undefined)
                 this.showAddressPayMethodDialog = true;
-                //this.sendRequestHandler(1, 1, requestSentTransition.transitionTo);
+
+            if (sendSugestionTransition !== undefined)
+                this.sugestionTransition = true;
         }
     },
     watch: {

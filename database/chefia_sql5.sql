@@ -61,6 +61,10 @@ CREATE TABLE requests_items (requests_id_fk		INT,
                              FOREIGN KEY (requests_id_fk) REFERENCES requests (requests_id),
                              FOREIGN KEY (items_id_fk) REFERENCES items (items_id));
                              
+CREATE TABLE sugestions (sugestions_id			INT PRIMARY KEY AUTO_INCREMENT,
+						 sugestions_datetime	DATETIME,
+						 sugestions_text		VARCHAR(1024));
+                             
 CREATE TABLE general_settings (general_settings_key		VARCHAR(64) PRIMARY KEY,
                                general_settings_value	VARCHAR(4096));
                                
@@ -76,6 +80,7 @@ INSERT INTO transitions_types (transitions_types_name) VALUES ('add_to_cart');
 INSERT INTO transitions_types (transitions_types_name) VALUES ('request_sent');
 INSERT INTO transitions_types (transitions_types_name) VALUES ('request_being_made');
 INSERT INTO transitions_types (transitions_types_name) VALUES ('request_received');
+INSERT INTO transitions_types (transitions_types_name) VALUES ('send_sugestion');
 
 -- Replication of Sent Example --
 
