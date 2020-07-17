@@ -16,11 +16,8 @@
                     <v-divider class="my-2"></v-divider>
                     Quantidade
                     <v-row>
-                        <v-col class="col-10">
-                            <v-slider min="1" max="15" v-model="quantity"></v-slider>
-                        </v-col>
-                        <v-col class="col-2">
-                            {{ quantity }}
+                        <v-col class="col-5">
+                            <v-text-field min="1" max="15" v-model="quantity" type="number"></v-text-field>
                         </v-col>
                     </v-row>
                     <v-divider class="mb-2"></v-divider>
