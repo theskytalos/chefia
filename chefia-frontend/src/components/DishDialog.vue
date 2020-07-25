@@ -62,7 +62,7 @@ export default {
         }
     },
     watch: {
-        dialog: function () {
+        dialog() {
             this.quantity = 1;
             this.observations = "";
         }

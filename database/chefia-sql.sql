@@ -38,6 +38,29 @@ CREATE TABLE items_images (items_images_id	INT PRIMARY KEY AUTO_INCREMENT,
 						   items_images_path	VARCHAR(4096),
                            items_id_fk			INT,
                            FOREIGN KEY (items_id_fk) REFERENCES items (items_id));
+                           
+CREATE TABLE shops (shops_id			INT PRIMARY KEY AUTO_INCREMENT,
+					shops_name			VARCHAR(256),
+                    shops_description	VARCHAR(1024),
+					shops_specialty		VARCHAR(128),
+                    shops_logo_image	VARCHAR(4096),
+                    shops_cep			VARCHAR(9),
+					shops_uf			CHAR(2),
+					shops_city			VARCHAR(1024),
+					shops_neighbourhood VARCHAR(2048),
+					shops_street		VARCHAR(2048),
+					shops_number 		INT,
+					shops_complement	VARCHAR(2048),
+					shops_reference		VARCHAR(2048),
+                    shops_map_url		TEXT,
+                    interactions_id_fk	INT,
+					FOREIGN KEY (interactions_id_fk) REFERENCES interactions (interactions_id));
+                    
+CREATE TABLE shops_phones (shops_phones_id		INT PRIMARY KEY AUTO_INCREMENT,
+						   shops_phones_type	INT,
+						   shops_phones_number	VARCHAR(11),
+                           shops_id_fk			INT,
+                           FOREIGN KEY (shops_id_fk) REFERENCES shops (shops_id));
                      
 CREATE TABLE requests (requests_id				INT PRIMARY KEY AUTO_INCREMENT,
 					   requests_datetime		DATETIME,
@@ -61,6 +84,10 @@ CREATE TABLE requests_items (requests_id_fk		INT,
                              FOREIGN KEY (requests_id_fk) REFERENCES requests (requests_id),
                              FOREIGN KEY (items_id_fk) REFERENCES items (items_id));
                              
+CREATE TABLE sugestions (sugestions_id			INT PRIMARY KEY AUTO_INCREMENT,
+						 sugestions_datetime 	DATETIME,
+						 sugestions_text		VARCHAR(1024));
+                             
 CREATE TABLE general_settings (general_settings_key		VARCHAR(64) PRIMARY KEY,
                                general_settings_value	VARCHAR(4096));
                                
@@ -76,3 +103,4 @@ INSERT INTO transitions_types (transitions_types_name) VALUES ('add_to_cart');
 INSERT INTO transitions_types (transitions_types_name) VALUES ('request_sent');
 INSERT INTO transitions_types (transitions_types_name) VALUES ('request_being_made');
 INSERT INTO transitions_types (transitions_types_name) VALUES ('request_received');
+INSERT INTO transitions_types (transitions_types_name) VALUES ('send_sugestion');

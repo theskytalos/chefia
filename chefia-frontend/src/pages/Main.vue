@@ -36,6 +36,9 @@
                 <v-col v-else-if="speech.type === 'menu'" class="col-11 col-lg-8">
                   <ChefiaBubble type="menu" v-bind:text="speech.interactionContent" v-bind:transitions="speech.transitions" v-bind:items="speech.items" v-bind:options="speech.interactionAlternatives" v-bind:get-next-chat-handler="getNextChat" v-bind:user-speech-handler="userSpeech" v-bind:add-to-cart-handler="addToCart" v-bind:speeches-watch="speeches" v-bind:request-watch="isRequestDone" />
                 </v-col>
+                <v-col v-else-if="speech.type === 'shops'" class="col-11 col-lg-8">
+                  <ChefiaBubble type="shops" v-bind:text="speech.interactionContent" v-bind:transitions="speech.transitions" v-bind:shops="speech.shops" v-bind:options="speech.interactionAlternatives" v-bind:get-next-chat-handler="getNextChat" v-bind:user-speech-handler="userSpeech" v-bind:speeches-watch="speeches" />
+                </v-col>
                 <v-col v-else-if="speech.type === 'image'" class="col-auto">
                   <ChefiaBubble type="image" v-bind:image-url="speech.imageUrl" />
                 </v-col>
@@ -91,14 +94,13 @@ export default {
       getClientSettings() {
         Api().post('GeneralSettingView.php', { apiRequest: 'getAllClientSettings' })
           .then((response) => {
-            console.log(response);
             if (response.data.success) {
               if (response.data.content) {
                 let settingsArray = response.data.content;
 
                 const imageUrl = settingsArray.find((element) => element.generalSettingKey === 'franchise_image');
 
-                if (imageUrl !== undefined) {
+                if (imageUrl !== undefined && imageUrl.generalSettingValue !== '') {
                   let interactionObject = { type: 'image', imageUrl: imageUrl.generalSettingValue };
                   this.interactions.push(interactionObject);
                   this.speeches.push(interactionObject);
@@ -118,11 +120,13 @@ export default {
       getNextChat(interactionId, itemAddedToCart = 0) {
         Api().post('ChatView.php', { apiRequest: 'get', interactionId, itemAddedToCart })
           .then((response) => {
+            console.log(response.data);
             if (response.data.success) {
               let interactionObject = response.data.content.chatInteraction;
               let optionsArray = [];
               let transitionsArray = [];
               let itemsArray = [];
+              let shopsArray = [];
               let autoTransition = false;
 
               // Search for automatic transitions
@@ -153,10 +157,21 @@ export default {
               itemsArray.forEach((element) => {
                 delete element.interactionModel;
               });
+
+              if (Array.isArray(response.data.content.chatShops))
+                if (response.data.content.chatShops.length > 0)
+                  shopsArray = Object.assign(shopsArray, response.data.content.chatShops);
+
+              shopsArray.forEach((element) => {
+                delete element.interactionModel;
+              });
               
               if (itemsArray.length > 0) {
                 interactionObject.type = 'menu';
                 interactionObject.items = itemsArray;
+              } else if (shopsArray.length > 0) {
+                interactionObject.type = 'shops';
+                interactionObject.shops = shopsArray;
               } else 
                 interactionObject.type = 'chatbot';
               

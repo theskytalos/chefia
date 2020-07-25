@@ -3,6 +3,7 @@
     require_once dirname(__FILE__) . "/InteractionController.php";
     require_once dirname(__FILE__) . "/TransitionController.php";
     require_once dirname(__FILE__) . "/ItemController.php";
+    require_once dirname(__FILE__) . "/ShopController.php";
 
     class ChatController {
         public function getNextChat($interactionId, $itemAddedToCart) {
@@ -32,6 +33,9 @@
             $itemController = new ItemController();
             $items = $itemController->getAllItemsByInteraction($interactionId);
 
+            $shopController = new ShopController();
+            $shops = $shopController->getAllShopsByInteraction($interactionId);
+
             // Check if there is a item to substitute in the message
             if (!empty($itemAddedToCart) && is_numeric($itemAddedToCart)) {
                 $item = $itemController->getItem($itemAddedToCart);
@@ -43,6 +47,7 @@
             $chatModel->setChatInteraction($interaction);
             $chatModel->setChatTransitions($transitions);
             $chatModel->setChatItems($items);
+            $chatModel->setChatShops($shops);
 
             return $chatModel;
         }

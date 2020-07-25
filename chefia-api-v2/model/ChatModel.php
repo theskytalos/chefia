@@ -3,6 +3,7 @@
         private $chatInteraction;
         private $chatTransitions;
         private $chatItems;
+        private $chatShops;
 
         public function getChatInteraction() {
             return $this->chatInteraction;
@@ -28,10 +29,19 @@
             $this->chatItems = $chatItems;
         }
 
+        public function getChatShops() {
+            return $this->chatShops;
+        }
+
+        public function setChatShops($chatShops) {
+            $this->chatShops = $chatShops;
+        }
+
         public function jsonSerialize() {
             return ["chatInteraction" => $this->getChatInteraction(),
                     "chatTransitions" => $this->getChatTransitions(),
-                    "chatItems" => $this->getChatItems()];
+                    "chatItems" => $this->getChatItems(),
+                    "chatShops" => $this->getChatShops()];
         }
     }
 ?>

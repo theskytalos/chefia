@@ -6,7 +6,7 @@
         public function createSugestion($sugestionModel) {
             global $pdo;
 
-            $sugestionQuery = $pdo->prepare("INSERT INTO sugestions (sugestions_text) VALUES (:sugestions_datetime, :sugestions_text);");
+            $sugestionQuery = $pdo->prepare("INSERT INTO sugestions (sugestions_datetime, sugestions_text) VALUES (:sugestions_datetime, :sugestions_text);");
             $sugestionQuery->bindValue(":sugestions_datetime", $sugestionModel->getSugestionDatetime(), PDO::PARAM_STR);
             $sugestionQuery->bindValue(":sugestions_text", $sugestionModel->getSugestionText(), PDO::PARAM_STR);
 

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export default() => {
     return axios.create({
-        baseURL: 'http://localhost/chefia-api-v2/view/',
+        baseURL: 'http://esaojoao.com.br/chefia-api-v2/view/',
         withCredentials: false,
         headers: {
             'Accept': 'application/json',

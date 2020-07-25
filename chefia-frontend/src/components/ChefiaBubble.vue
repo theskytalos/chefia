@@ -5,12 +5,12 @@
                 {{ text }}
             </div>
         </v-card-text>
-        <v-card-actions v-if="actionsAvailable && options.length !== 0 || sugestionTransition" class="horiz-scroll">
+        <v-card-actions v-if="actionsAvailable && options.length !== 0 || Object.keys(sugestionTransition).length !== 0" class="horiz-scroll">
             <v-btn color="indigo" dark v-for="(option, index) in options" v-bind:key="index" v-on:click="userSpeechHandler(option.transitionText); getNextChatHandler(option.nextInteractionId);" class="horiz-scroll-item">{{ option.transitionText }}</v-btn>
-            <v-btn color="indigo" dark v-if="sugestionTransition" v-on:click.stop="userSpeechHandler('Enviar Sugestão'); showSugestionDialog = true;">Enviar Sugestão</v-btn>
+            <v-btn color="indigo" dark v-if="Object.keys(sugestionTransition).length !== 0" v-on:click.stop="userSpeechHandler(sugestionTransition.transitionValue); showSugestionDialog = true;">{{ sugestionTransition.transitionValue }}</v-btn>
         </v-card-actions>
         <AddressPayMethodDialog v-model="showAddressPayMethodDialog" v-bind:send-request-handler="preSendRequest"/>
-        <SugestionDialog v-model="showSugestionDialog" />
+        <SugestionDialog v-model="showSugestionDialog" v-bind:dst="parseInt(sugestionTransition.transitionTo, 10)" v-bind:get-next-chat-handler="getNextChatHandler" />
     </v-card>
     <div v-else-if="type === 'menu'">
         <v-card class="mr-auto my-3 tri-right left-top">
@@ -52,6 +52,46 @@
             </v-card-text>
         </v-card>
     </div>
+    <div v-else-if="type === 'shops'">
+        <v-card class="mr-auto my-3 tri-right left-top">
+            <v-card-text>
+                <div class="text--primary">
+                    {{ text }}
+                </div>
+            </v-card-text>
+        </v-card>
+        <v-card class="mr-auto my-3">
+            <v-card-text class="horiz-scroll">
+                <v-card min-height="100%" min-width="250" max-width="250" class="horiz-scroll-item mr-3" v-for="shop in shops" v-bind:key="shop.shopId">
+                    <v-card-text>
+                        <p class="display-1 text--primary">
+                            {{ shop.shopName }}
+                        </p>
+                        <p class="subtitle-2">
+                            {{ shop.shopSpecialty }}
+                        </p>
+                        <v-divider></v-divider>
+                        <div class="text--primary mt-3">
+                            {{ shop.shopDescription }}
+                        </div>
+                    </v-card-text>
+                    <v-card-actions class="mt-auto">
+                        <v-btn text color="indigo" class="mx-auto" v-on:click.stop="currentShop = shop; showShopDialog = true">
+                            Ver Estabelecimento
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-card-text>
+            <ShopDialog v-model="showShopDialog" v-bind:shop="currentShop" />
+        </v-card>
+        <v-card class="mr-auto my-3 tri-right left-top" v-if="actionsAvailable && options.length !== 0">
+            <v-card-text>
+                <v-card-actions class="horiz-scroll">
+                    <v-btn color="indigo" dark v-for="(option, index) in options" v-bind:key="index" v-on:click="userSpeechHandler(option.transitionText); getNextChatHandler(option.nextInteractionId);" class="horiz-scroll-item">{{ option.transitionText }}</v-btn>
+                </v-card-actions>
+            </v-card-text>
+        </v-card>
+    </div>
     <v-card class="mr-auto my-3 tri-right left-top" v-else-if="type === 'image'">
         <v-card-text>
             <div class="text--primary">
@@ -63,6 +103,7 @@
 
 <script>
 import DishDialog from './DishDialog';
+import ShopDialog from './ShopDialog';
 import AddressPayMethodDialog from './AdressPayMethodDialog';
 import SugestionDialog from './SugestionDialog';
 
@@ -72,15 +113,19 @@ export default {
         return {
             actionsAvailable: true,
             itemsAvailable: true,
-            sugestionTransition: false,
+            sugestionTransition: {},
+            sugestionTransitionText: '',
             showDishDialog: false,
+            showShopDialog: false,
             showAddressPayMethodDialog: false,
             showSugestionDialog: false,
-            currentItem: {}
+            currentItem: {},
+            currentShop: {}
         }
     },
     components: {
         DishDialog,
+        ShopDialog,
         AddressPayMethodDialog,
         SugestionDialog
     },
@@ -91,6 +136,7 @@ export default {
         options: Array,
         transitions: Array,
         items: Array,
+        shops: Array,
         speechesWatch: Array,
         requestWatch: Boolean,
         getNextChatHandler: Function,
@@ -129,8 +175,9 @@ export default {
             if (requestSentTransition !== undefined)
                 this.showAddressPayMethodDialog = true;
 
-            if (sendSugestionTransition !== undefined)
-                this.sugestionTransition = true;
+            if (sendSugestionTransition !== undefined) {
+                this.sugestionTransition = sendSugestionTransition;
+            }
         }
     },
     watch: {

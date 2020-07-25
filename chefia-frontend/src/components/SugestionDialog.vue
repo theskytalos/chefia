@@ -16,6 +16,10 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <v-snackbar v-model="snackbar">
+          {{ snackbarText }}
+          <v-btn color="indigo" text v-on:click="snackbar = false">Fechar</v-btn>
+        </v-snackbar>
     </v-row>
 </template>
 
@@ -25,7 +29,8 @@ import Api from '../services/Api';
 export default {
     name: 'SugestionDialog',
     props: {
-
+        dst: Number,
+        getNextChatHandler: Function
     },
     data () {
         return {
@@ -42,6 +47,8 @@ export default {
                     if (response.data.success) {
                         this.snackbarText = response.data.content;
                         this.snackbar = true;
+                        if (this.dst != 0)
+                            this.getNextChatHandler(this.dst);
                         this.dialog = false;
                     } else {
                         if (!response.data.content)
